@@ -9,7 +9,7 @@ import authMiddleware from './middleware/authenticate/authMiddleware.js';
 import UsersModel from './model/usersModel.js';
 import TasksModel from './model/tasksModel.js';
 import { loginHandler } from './controllers/usersController.js';
-import { getAllTasksHandler, updateTaskHandler } from './controllers/tasksController.js';
+import { getAllTasksHandler, updateTaskHandler, deleteTaskHandler } from './controllers/tasksController.js';
 import { tasksMock, userMock } from './mocks/dataBaseMocks.js';
 
 // init dotenv
@@ -17,7 +17,7 @@ dotenv.config();
 
 // Create server
 const app = express();
-const port = process.env.LOCAL_HOST || 3100;
+const port = process.env.LOCAL_HOST || 3200;
 const router = express.Router();
 
 // Middlewares
@@ -40,7 +40,7 @@ router.route('/login').post(loginHandler);
 
 router.route('/tasks/:page').get(getAllTasksHandler);
 
-router.route('/tasks/finish/:id').put(updateTaskHandler);
+router.route('/tasks/:id').put(updateTaskHandler).delete(deleteTaskHandler);
 
 // Sync sequelize and add init admin user and tasks
 sequelize.sync({ force: true }).then(() => {
