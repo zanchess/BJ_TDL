@@ -12,8 +12,7 @@ const UsersModel = sequelize.define(
         },
         u_name: {
             type: DataTypes.STRING,
-            allowNull: false,
-            field: 'name'
+            allowNull: false
         },
         u_password: {
             type: DataTypes.STRING,

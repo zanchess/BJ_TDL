@@ -18,12 +18,11 @@ const getAllTasksHandler = async (req, res, next) => {
 };
 
 const updateTaskHandler = async (req, res, next) => {
-    const group = req.body;
+    const task = req.body;
     const { id } = req.params;
 
     try {
-        const finishedTask = await taskService.updateTask(id, group);
-        console.log(finishedTask);
+        const finishedTask = await taskService.updateTask(id, task);
 
         await res.status(StatusCodes.OK);
         await res.send({ finished: true, message: 'Task is completed', updatedTask: structuredClone(finishedTask) });
@@ -48,17 +47,15 @@ const deleteTaskHandler = async (req, res, next) => {
 };
 
 const addNewTaskHandler = async (req, res, next) => {
-    try {
-        const result = await taskService.addUsersToGroup(req.params.groupId, req.body.userIds);
+    const task = req.body;
 
-        if (result) {
-            res.status(StatusCodes.OK);
-            res.send({ message: 'User was added to group' });
-        } else {
-            res.status(StatusCodes.NOT_FOUND);
-        }
+    try {
+        const result = await taskService.addNewTask(task);
+
+        res.status(StatusCodes.OK);
+        res.send(result);
     } catch (err) {
-        err.customErrorMessage = `User wasn't add to group with ${req.params.groupId} and ${req.body.userIds} `;
+        err.customErrorMessage = `Task ${task} wasn't added to task list`;
         return next(err);
     }
 };
