@@ -3,7 +3,7 @@ class UserService {
         this.usersModel = usersModel;
     }
 
-    async getUserByLogin(login) {
+    async getUserByName(login) {
         try {
             const user = await this.usersModel.findOne({
                 where: {
@@ -17,8 +17,7 @@ class UserService {
     }
 
     async authUser(login, password) {
-        const { dataValues: user } = await this.getUserByLogin(login);
-        console.log(user);
+        const { dataValues: user } = await this.getUserByName(login);
 
         if (user && user.u_password === password) {
             return user;

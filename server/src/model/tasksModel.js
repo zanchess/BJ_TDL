@@ -1,27 +1,30 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../data-access/db-connection.js';
-import { TASK_STATUSES } from '../constants/contants.js';
+import sequelize from '../data-access/dbConnection.js';
 
 const TasksModel = sequelize.define(
     'Tasks',
     {
-        _id: {
+        id: {
             type: DataTypes.UUID,
             primaryKey: true,
             defaultValue: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            field: '_id'
         },
-        t_name: {
+        name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            field: 't_name'
         },
-        t_email: {
+        email: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            field: 't_email'
         },
-        t_status: {
+        status: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            field: 't_status'
         }
     },
     {
