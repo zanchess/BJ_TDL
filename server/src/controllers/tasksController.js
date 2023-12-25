@@ -1,20 +1,8 @@
-import TasksModel from '../model/tasks.js';
-import TasksService from '../services/tasks.js';
+import TasksModel from '../model/tasksModel.js';
+import TasksService from '../services/tasksService.js';
 import { StatusCodes } from 'http-status-codes';
 
 const taskService = new TasksService(TasksModel);
-
-export const getTotalTasksHandler = async (req, res, next) => {
-    try {
-        const tasksAmount = await taskService.getTotalTasks();
-
-        await res.status(StatusCodes.OK);
-        await res.send({tasksAmount});
-    } catch (err) {
-        err.customErrorMessage = "Couldn't get tasks";
-        return next(err);
-    }
-};
 
 const getAllTasksHandler = async (req, res, next) => {
     try {
@@ -29,17 +17,18 @@ const getAllTasksHandler = async (req, res, next) => {
     }
 };
 
-const completeTaskHandler = async (req, res, next) => {
+const updateTaskHandler = async (req, res, next) => {
     const group = req.body;
     const { id } = req.params;
 
     try {
-        await taskService.updateGroupInDatabase(id, group);
+        const finishedTask = await taskService.updateTask(id, group);
+        console.log(finishedTask);
 
         await res.status(StatusCodes.OK);
-        await res.send({ completed: true, message: 'Task is completed' });
+        await res.send({ finished: true, message: 'Task is completed', finishedTask: structuredClone(finishedTask) });
     } catch (err) {
-        err.customErrorMessage = `Task with id ${id} not found`;
+        err.customErrorMessage = `Task with id ${id} wasn't updated`;
         return next(err);
     }
 };
@@ -74,4 +63,4 @@ const addNewTaskHandler = async (req, res, next) => {
     }
 };
 
-export { getAllTasksHandler, completeTaskHandler, deleteTaskHandler, addNewTaskHandler, taskService };
+export { getAllTasksHandler, updateTaskHandler, deleteTaskHandler, addNewTaskHandler, taskService };

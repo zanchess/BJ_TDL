@@ -3,14 +3,14 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import sequelize from './data-access/db-connection.js';
+import sequelize from './data-access/dbConnection.js';
 import errorHandler from './middleware/errorHandling.js';
-import authMiddleware from './middleware/authenticate/auth-middleware.js';
-import UsersModel from './model/users.js';
-import TasksModel from './model/tasks.js';
-import { loginHandler } from './controllers/users.js';
-import {getAllTasksHandler, getTotalTasksHandler} from './controllers/tasks.js';
-import {tasksMock, userMock} from './mocks/data-base-mocks.js';
+import authMiddleware from './middleware/authenticate/authMiddleware.js';
+import UsersModel from './model/usersModel.js';
+import TasksModel from './model/tasksModel.js';
+import { loginHandler } from './controllers/usersController.js';
+import { getAllTasksHandler, updateTaskHandler } from './controllers/tasksController.js';
+import { tasksMock, userMock } from './mocks/dataBaseMocks.js';
 
 // init dotenv
 dotenv.config();
@@ -40,23 +40,26 @@ router.route('/login').post(loginHandler);
 
 router.route('/tasks/:page').get(getAllTasksHandler);
 
-router.route('/task/total').get(getTotalTasksHandler);
+router.route('/tasks/finish/:id').put(updateTaskHandler);
 
 // Sync sequelize and add init admin user and tasks
 sequelize.sync({ force: true }).then(() => {
     app.listen(port, (err) => {
         if (err) {
-            console.error('something bad happened', err.message);
+            console.error('Something bad happened', err.message);
         }
         console.info(`Server is listening on ${port} click link: \x1b[36m http://localhost:${port} \x1b[0m `);
-        UsersModel.create(userMock).then(() => console.info('Init admin user added')).catch(e => console.log('ERR', e));
-        TasksModel.bulkCreate(tasksMock).then(() => console.info('Init tasks added')).catch(e => console.log('ERR', e));
+        UsersModel.create(userMock)
+            .then(() => console.info('Init admin user added'))
+            .catch((error) => console.log('INIT_USER_RECORD_ERROR', error));
+        TasksModel.bulkCreate(tasksMock)
+            .then(() => console.info('Init tasks added'))
+            .catch((error) => console.log('INIT_TASK_RECORDS_ERROR', error));
     });
 });
 
 process.on('uncaughtException', (error) => {
     console.error(`UncaughtException occurred: ${error.message}`);
-    sequelize.destroy();
     sequelize.destroy();
     process.exit(1);
 });

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { StatusCodes } from 'http-status-codes';
-import UserService from '../services/users.js';
-import UsersModel from '../model/users.js';
+import UserService from '../services/usersService.js';
+import UsersModel from '../model/usersModel.js';
 
 const userService = new UserService(UsersModel);
 
