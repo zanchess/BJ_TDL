@@ -26,7 +26,7 @@ const updateTaskHandler = async (req, res, next) => {
         console.log(finishedTask);
 
         await res.status(StatusCodes.OK);
-        await res.send({ finished: true, message: 'Task is completed', finishedTask: structuredClone(finishedTask) });
+        await res.send({ finished: true, message: 'Task is completed', updatedTask: structuredClone(finishedTask) });
     } catch (err) {
         err.customErrorMessage = `Task with id ${id} wasn't updated`;
         return next(err);
@@ -34,15 +34,15 @@ const updateTaskHandler = async (req, res, next) => {
 };
 
 const deleteTaskHandler = async (req, res, next) => {
-    const group = req.body;
+    const { id } = req.params;
 
     try {
-        const newGroup = await taskService.pushNewGroup(group);
+        const deletedTask = await taskService.deleteTask(id);
 
         await res.status(StatusCodes.OK);
-        await res.send(newGroup);
+        await res.send(deletedTask);
     } catch (err) {
-        err.customErrorMessage = "Group wasn't created";
+        err.customErrorMessage = `Task ${id} wasn't deleted`;
         return next(err);
     }
 };

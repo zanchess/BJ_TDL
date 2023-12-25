@@ -21,7 +21,46 @@ export default class TasksService {
                 totalTaskAmount
             };
         } catch (error) {
-            throw new Error('Something was wrong during getting tasks from DB');
+            throw new Error('Something was wrong during getting tasks from DB.');
+        }
+    }
+
+    async updateTask(id, task) {
+        try {
+            console.info(`Service: executing updateTask(id = ${id}, task = ${JSON.stringify(task)}).`);
+
+            const taskValues = Object.values(TASK_STATUSES);
+            if (!taskValues.includes(task.status)) {
+                throw new Error(`Can\'t to update task with unexpected status. Status should be equal to: ${taskValues}.`);
+            }
+            const [, [updatedTask]] = await this.tasks.update(task, {
+                where: { id },
+                returning: true,
+                raw: true
+            });
+
+            return updatedTask;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async deleteTask(id) {
+        try {
+            console.info(`Service: executing deleteTask(id = ${id}.`);
+
+            const deletedRows = await this.tasks.destroy({
+                where: { id },
+                returning: true
+            });
+
+            if (deletedRows > 0) {
+                return { id: id, taskDeleted: true };
+            } else {
+                throw new Error(`No matching record found by id=${id} to delete`);
+            }
+        } catch (error) {
+            throw new Error(error);
         }
     }
 
@@ -38,24 +77,6 @@ export default class TasksService {
         try {
             console.info(`Service: executing pushNewTask(task = ${JSON.stringify(task)})`);
             return this.tasks.create({ ...task });
-        } catch (e) {
-            throw new Error(e);
-        }
-    }
-
-    async updateTask(id, task) {
-        try {
-            console.info(`Service: executing updateTask(id = ${id}, task = ${JSON.stringify(task)})`);
-
-            const taskValues = Object.values(TASK_STATUSES);
-            if (!taskValues.includes(task.status)) {
-                throw new Error(
-                    `Can\'t to update task with unexpected status. Status should be equal to: ${taskValues}`
-                );
-            }
-            const [, [updatedTask]] = await this.tasks.update(task, { where: { id }, returning: true, raw: true });
-
-            return updatedTask;
         } catch (error) {
             throw new Error(error);
         }
