@@ -9,7 +9,7 @@ import authMiddleware from './middleware/authenticate/authMiddleware.js';
 import UsersModel from './model/usersModel.js';
 import TasksModel from './model/tasksModel.js';
 import { loginHandler } from './controllers/usersController.js';
-import { getAllTasksHandler, updateTaskHandler, deleteTaskHandler } from './controllers/tasksController.js';
+import { getAllTasksHandler, updateTaskHandler, deleteTaskHandler, addNewTaskHandler } from './controllers/tasksController.js';
 import { tasksMock, userMock } from './mocks/dataBaseMocks.js';
 
 // init dotenv
@@ -33,7 +33,7 @@ router.use((req, res, next) => {
 });
 
 // Route handling for tasks
-router.route('/tasks');
+router.route('/tasks').post(addNewTaskHandler);
 
 // Route handling for logIn
 router.route('/login').post(loginHandler);
@@ -48,7 +48,9 @@ sequelize.sync({ force: true }).then(() => {
         if (err) {
             console.error('Something bad happened', err.message);
         }
+
         console.info(`Server is listening on ${port} click link: \x1b[36m http://localhost:${port} \x1b[0m `);
+
         UsersModel.create(userMock)
             .then(() => console.info('Init admin user added'))
             .catch((error) => console.log('INIT_USER_RECORD_ERROR', error));

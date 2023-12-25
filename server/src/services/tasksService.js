@@ -1,4 +1,5 @@
 import { PAGE_SIZE, TASK_STATUSES } from '../constants/contants.js';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class TasksService {
     constructor(tasksModel) {
@@ -21,7 +22,7 @@ export default class TasksService {
                 totalTaskAmount
             };
         } catch (error) {
-            throw new Error('Something was wrong during getting tasks from DB.');
+            throw new Error(error);
         }
     }
 
@@ -33,7 +34,7 @@ export default class TasksService {
             if (!taskValues.includes(task.status)) {
                 throw new Error(`Can\'t to update task with unexpected status. Status should be equal to: ${taskValues}.`);
             }
-            const [, [updatedTask]] = await this.tasks.update(task, {
+            const [, [updatedTask]] = await this.tasks.update(structuredClone(task), {
                 where: { id },
                 returning: true,
                 raw: true
@@ -68,15 +69,19 @@ export default class TasksService {
         try {
             console.info('Service: executing getTotalTasks');
             return this.tasks.count();
-        } catch (e) {
-            throw new Error(e);
+        } catch (error) {
+            throw new Error(error);
         }
     }
 
-    async pushNewTask(task) {
+    async addNewTask(task) {
         try {
-            console.info(`Service: executing pushNewTask(task = ${JSON.stringify(task)})`);
-            return this.tasks.create({ ...task });
+            const taskToSave = structuredClone(task);
+            taskToSave.id = uuidv4();
+
+            console.info(`Service: executing addNewTask(task = ${JSON.stringify(task)})`);
+
+            return this.tasks.create(taskToSave);
         } catch (error) {
             throw new Error(error);
         }
