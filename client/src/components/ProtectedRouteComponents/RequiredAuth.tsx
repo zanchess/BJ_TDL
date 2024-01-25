@@ -6,7 +6,6 @@ function RequireAuth({ children }: { children: React.JSX.Element }): React.JSX.E
     const accessToken = localStorage.getItem('token');
 
     if (!accessToken) {
-        // Redirect to the /login page
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
