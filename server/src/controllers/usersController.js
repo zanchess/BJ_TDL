@@ -15,7 +15,7 @@ const loginHandler = async (req, res) => {
 
         if (user) {
             const accessToken = await jwt.sign(jwtPayload, secretKey, jwtExpiration);
-            await res.json({ access_token: `Bearer ${accessToken}` });
+            await res.json({ accessToken: `Bearer ${accessToken}` });
         } else {
             res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized error: user is not found' });
         }
